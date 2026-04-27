@@ -1,0 +1,44 @@
+# Orcas 配置文件
+# 复制为 config.yaml 并根据环境修改
+
+orcas:
+  # 数据存放根目录（默认 ~/.orcas）
+  home: "~/.orcas"
+
+  # LLM 配置（用于精校 NER 和报告生成）
+  llm:
+    provider: "deepseek"      # deepseek | openai | openrouter
+    api_key: "${LLM_API_KEY}" # 优先用环境变量
+    model: "deepseek-chat"    # deepseek-chat | gpt-4o-mini | ...
+    temperature: 0.3
+    max_tokens: 4096
+
+  # 知识图谱数据库
+  knowledge_graph:
+    db_path: "~/.orcas/kg.db"
+
+  # 数据采集源
+  collector:
+    sources:
+      - type: rss
+        name: "example-tech"
+        url: "https://feed.example.com/tech"
+        category: "technology"
+        language: "en"
+      # - type: rss
+      #   name: "example-news"
+      #   url: "https://feed.example.com/news"
+      #   category: "general"
+      # - type: api
+      #   name: "github-trending"
+      #   endpoint: "https://api.github.com/search/repositories?q=..."
+      # - type: custom
+      #   name: "my-source"
+      #   adapter: "my_adapter_module"
+
+  # 报告投递目标
+  delivery:
+    targets:
+      - platform: "console"   # 开发阶段先用终端输出
+      # - platform: "file"
+      #   path: "~/.orcas/reports/"
