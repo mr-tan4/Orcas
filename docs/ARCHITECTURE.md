@@ -151,7 +151,7 @@ pip install -r requirements.txt
 ### Step 2: 获取代码
 
 ```bash
-git clone <repo_url> orcas
+git clone https://github.com/mr-tan4/Orcas.git orcas
 cd orcas
 ```
 
