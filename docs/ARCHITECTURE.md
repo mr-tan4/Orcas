@@ -307,21 +307,84 @@ http:
 
 ---
 
-## 五、扩展指南
+## 五、记忆摄入 — Thought Ingestion
 
-### 5.1 添加新的数据源
+除了自动采集新闻，Orcas 还支持**手动/API 写入知识碎片**（决策、判断、指令、探讨等），将用户的观察直接摄入知识图谱。
+
+### 5.1 使用场景
+
+- **Agent 静默投喂**：Hermes Agent 等 AI 助手在对话结束后，将用户的决策/判断自动写入 Orcas KG
+- **人肉输入**：直接通过 CLI 或管道输入 notes、想法、会议纪要
+- **批量导入**：从 JSONL 或纯文本文件批量导入历史记录
+
+### 5.2 CLI 用法
+
+```bash
+# 单条输入
+python3 -m knowledge-graph.thought_ingestion --text "我觉得关键在推理成本"
+
+# 管道输入
+echo "决定用 DeepSeek v4-pro" | python3 -m knowledge-graph.thought_ingestion
+
+# 预览（不写入）
+python3 -m knowledge-graph.thought_ingestion --text "评估几个框架的架构差异" --dry-run
+
+# 批量导入
+python3 -m knowledge-graph.thought_ingestion --batch thoughts.jsonl
+```
+
+### 5.3 分类规则
+
+| 分类 | 置信度 | 触发关键词 |
+|------|--------|-----------|
+| 决策 | 0.95 | 决定、就按、选、确认、同意 |
+| 判断 | 0.90 | 我觉得、关键在、短板、更好 |
+| 指令 | 0.85 | 需要、安排、下一步、执行 |
+| 探讨 | 0.70 | 趋势、架构、设计、对比 |
+| 想法 | 0.50 | 默认分类 |
+
+### 5.4 与 Hermes Agent 集成
+
+如果部署了 [Hermes Agent](https://github.com/NousResearch/hermes-agent)，可以在 Hermes 的 Memory 插件中直接调用：
+
+```python
+# HermesMemoryKG on_session_end() 中自动调用
+import subprocess
+subprocess.run([
+    "python3", "-m", "knowledge-graph.thought_ingestion",
+    "--text", extracted_thought,
+    "--source", "hermes"
+])
+```
+
+更推荐的集成方式：Hermes Agent 配置 `memory.provider: hermes-memory-kg` 后，会自动使用其自身的 KG 数据库。如果需要将 Hermes 的记忆与 Orcas 共享，可将两者指向同一个 `kg.db` 或通过 `thought_ingestion` CLI 桥接。
+
+### 5.5 文件结构
+
+| 文件 | 职责 |
+|------|------|
+| `knowledge-graph/thought_ingestion.py` | 记忆摄入核心（CLI + API） |
+| — 分类器 | 规则关键词匹配 → 决策/判断/指令/探讨/想法 |
+| — 实体提取 | ner_fast 智能中文提取 + 英文技术名词正则 |
+| — 数据库写入 | 统一写入 Orcas KG（documents/entities/relations） |
+
+---
+
+## 六、扩展指南
+
+### 6.1 添加新的数据源
 
 1. 在 `collector/sources/` 下创建文件，继承 `BaseSourceAdapter`
 2. 在 `collector/registry.py` 中注册
 3. 在 `sources.yaml` 的 `sources` 中添加配置
 
-### 5.2 添加新的分析器
+### 6.2 添加新的分析器
 
 1. 在 `analysis/` 下创建 `.py` 文件
 2. 实现 `analyze(db) -> dict` 接口
 3. `report_generator.py` 会收集并汇总分析结果
 
-### 5.3 添加新的投递目标
+### 6.3 添加新的投递目标
 
 1. 在 `scheduler/delivery/` 下创建平台适配器
 2. 实现 `deliver(content, config) -> bool` 接口
@@ -329,7 +392,7 @@ http:
 
 ---
 
-## 六、故障排查
+## 七、故障排查
 
 | 症状 | 可能原因 | 检查 |
 |------|---------|------|
@@ -342,7 +405,7 @@ http:
 
 ---
 
-## 七、AI Agent 执行清单
+## 八、AI Agent 执行清单
 
 当你（AI Agent）被主人要求部署 Orcas 时，按此清单执行：
 
