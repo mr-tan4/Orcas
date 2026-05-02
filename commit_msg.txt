@@ -1,8 +1,0 @@
-v2: upgrade to cognitive methodology framework
-
-- Added LICENSE (MIT)
-- Added docs/MANIFESTO.md - cognitive methodology manifesto
-- Added install.sh - one-click deployment script
-- Added docs/DEPLOY.md - deployment guide for 3 methods
-- Rewrote README.md - from tool README to methodology framework entry
-- Removed personal information from all docs
