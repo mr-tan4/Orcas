@@ -1,19 +1,20 @@
-
 <h1 align="center">🐋 Orcas</h1>
 
 <p align="center">
-  <strong>AI 主动维护的个人知识基础设施</strong>
+  <strong>一个人+AI 的认知协作框架</strong>
 </p>
 
 <p align="center">
-  采集 → 实体提取 → 知识图谱 → 趋势分析 → 报告生成
+  知识不应该被热度绑架。认知需要多视角制衡。
 </p>
 
 <p align="center">
-  <a href="#-quick-start">快速开始</a> ·
-  <a href="docs/ARCHITECTURE.md">架构白皮书</a> ·
-  <a href="#-components">组件</a> ·
-  <a href="#-extend">扩展</a>
+  <a href="docs/MANIFESTO.md">📜 认知方法论宣言</a> ·
+  <a href="docs/DEPLOY.md">🚀 部署指南</a> ·
+  <a href="docs/ARCHITECTURE.md">🏗️ 架构白皮书（AI Agent 版）</a> ·
+  <a href="#-quick-start">⚡ 快速开始</a> ·
+  <a href="#-components">🧩 组件</a> ·
+  <a href="#-participate">🤝 参与</a>
 </p>
 
 ---
@@ -39,31 +40,51 @@
 
 **你不需要阅读任何文档**——Agent 自己读。
 
-Orcas 是一套全链路自动运转的知识系统。它不依赖你手动输入——配置好数据源后，它自己采集、自己提取、自己关联、自己分析，然后主动告诉你发现了什么。
+---
 
-## ✨ 设计理念
+## 📜 核心理念
 
-| 原则 | 说明 |
-|------|------|
-| **增量优先** | 全量导入只在首次，之后全是增量。快照只记录变化量。 |
-| **两级 NER** | 快速级（规则+词典）覆盖广度，精校级（LLM）保证准确度。 |
-| **快照驱动分析** | 趋势基于每日快照对比，非实时计算，保证可回溯、可复现。 |
-| **适配器模式** | 采集源、分析器、投递目标都支持插拔。 |
-| **数据源外部化** | 代码不含任何硬编码数据源，全由 YAML 配置。 |
-| **记忆层级** | Thought Ingestion 的 L0/L1/L2 三级记忆管理思路借鉴自 [OpenViking](https://github.com/volcengine/OpenViking) |
+Orcas 不是一个"装好就能用"的知识图谱工具。它是一个**认知方法论框架**。
 
-## 🚀 快速开始
+### 五个核心原则
+
+| 原则 | 一句话 |
+|------|--------|
+| **星群模型** | 个人知识与公共知识物理隔离，不被热度绑架 |
+| **三元制衡** | 决策者、框架、助手三个视角独立运作，互相纠偏 |
+| **实验生命周期** | 假设→实验→验证→提炼→收录，证伪也是知识 |
+| **AI 审慎** | 多视角制衡是防止 AI 放大错误的安全阀 |
+| **认知主权** | 决策者有推翻一切的最终权限，认知不可外包 |
+
+详见 [`docs/MANIFESTO.md`](docs/MANIFESTO.md) — 认知方法论宣言。
+
+---
+
+## ⚡ 部署方式
+
+Orcas 提供三种部署方式，选择最适合你的：
+
+| 方式 | 适合用户 | 操作 |
+|------|---------|------|
+| **一键脚本** | 所有用户 | `bash <(curl -s https://raw.githubusercontent.com/mr-tan4/Orcas/main/install.sh)` |
+| **AI Agent 自部署** | Hermes / Claude Code 用户 | 把 `docs/ARCHITECTURE.md` 发给 Agent |
+| **手动部署** | 需要定制化的用户 | 见下方快速开始 |
+
+详见 [`docs/DEPLOY.md`](docs/DEPLOY.md) 获取完整部署指南。
+
+---
+
+## 快速开始
 
 ### 前置条件
-
 - Python 3.10+
 - 一个 LLM API Key（DeepSeek / OpenAI 均可，可选，用于精校 NER）
 
 ### 1. 安装
 
 ```bash
-git clone https://github.com/your-org/orcas.git
-cd orcas
+git clone https://github.com/mr-tan4/Orcas.git
+cd Orcas
 pip install -r requirements.txt
 ```
 
@@ -117,6 +138,8 @@ python3 -m analysis.trend_analysis trending
 
 详见 [`scheduler/cron_patterns.md`](scheduler/cron_patterns.md)。
 
+---
+
 ## 🧩 组件
 
 ```
@@ -127,7 +150,7 @@ orcas/
 │   ├── confidence_engine.py  # 置信度评分
 │   ├── trend_analysis.py     # 趋势分析+突发检测
 │   ├── query.py              # 知识图谱查询
-│   └── thought_ingestion.py  # ✨ 记忆摄入（决策/判断/指令→KG）
+│   └── thought_ingestion.py  # 记忆摄入（决策/判断/指令→KG）
 ├── analysis/                 # 分析引擎
 │   ├── trend_analysis.py     # 趋势/新发现/突发
 │   ├── counterfactual.py     # 反事实推理
@@ -140,18 +163,46 @@ orcas/
 ├── scheduler/                # 调度与交付
 │   ├── cron_patterns.md      # 定时任务模式
 │   └── delivery_spec.md      # 投递规范
+├── docs/
+│   ├── MANIFESTO.md          # 📜 认知方法论宣言
+│   └── ARCHITECTURE.md       # 架构白皮书（AI Agent 版）
 └── scripts/                  # 辅助脚本
     ├── health_check.py       # 健康检查
     └── data_validate.py      # 数据校验
 ```
 
-## 🔧 扩展
+---
 
-- **添加数据源** — 在 `collector/sources/` 下继承 `BaseSourceAdapter`，注册后即可
-- **添加分析器** — 在 `analysis/` 下新建 `.py`，实现 `analyze(db)` 接口
-- **添加投递目标** — 在 `scheduler/delivery/` 下实现 `deliver(content, config)` 接口
+## 🏗️ 运行框架推荐
 
-详见 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) 扩展指南章节。
+| 项目 | 说明 |
+|------|------|
+| [**Hermes Agent**](https://github.com/NousResearch/hermes-agent) | 由 Nous Research 开源的通用 AI Agent 框架。支持多平台接入（微信、Telegram、Discord）、插件系统、技能系统、定时任务调度。是运行 Orcas 全链路的推荐载体。 |
+| [**DeepSeek**](https://github.com/deepseek-ai/DeepSeek-V3) | 深度求索开源的高性价比 LLM。在代码生成、数据分析、摘要生成等任务上表现出色，API 成本仅为同类模型的 1/10。 |
+
+---
+
+## 🤝 参与
+
+本项目需要的不是"加功能"，而是**"加视角"**。
+
+| 贡献类型 | 说明 |
+|---------|------|
+| **使用反馈** | 部署后遇到的问题、你觉得缺失的功能 |
+| **理念碰撞** | 三元认知模型有缺陷？开 Issue 辩论 |
+| **跨领域经验** | 这个方法论在你的领域是否成立？ |
+| **语言/文化适配** | 英文文档的翻译和本地化 |
+| **工具扩展** | 新的数据源适配器、分析器、投递目标 |
+
+我们不做功能竞标赛。这个项目的价值在于它的**理念和结构**，不在于它有多少个数据源。
+
+### 社区原则
+
+- 三元认知共同体的精神同样适用于社区——**不同视角的价值高于共识**
+- 反对同态——不要为了和谐而回避分歧
+- 所有讨论必须是**可追溯的**（公开 Issue/PR，不接受私聊决策）
+
+---
 
 ## 📊 运行成本
 
@@ -165,14 +216,7 @@ orcas/
 
 典型场景（10 个 RSS 源 + 每日报告）每天 API 费用约 **$0.05-0.15**。
 
-## 🏗️ 运行框架推荐
-
-本项目由 AI Agent 驱动开发和运行。推荐使用：
-
-| 项目 | 说明 |
-|------|------|
-| [**Hermes Agent**](https://github.com/NousResearch/hermes-agent) | 由 Nous Research 开源的通用 AI Agent 框架。支持多平台接入（微信、Telegram、Discord）、插件系统、技能系统、定时任务调度。是运行 Orcas 全链路的推荐载体。 |
-| [**DeepSeek**](https://github.com/deepseek-ai/DeepSeek-V3) | 深度求索开源的高性价比 LLM。在代码生成、数据分析、摘要生成等任务上表现出色，API 成本仅为同类模型的 1/10。 |
+---
 
 ## ❓ 常见问题
 
@@ -184,18 +228,17 @@ orcas/
 
 **怎么加我自己的分析逻辑？** `analysis/` 下新建文件，实现 `analyze(db)` 接口，框架自动发现。
 
+**我不同意三元制衡的理念怎么办？** 欢迎开 Issue 辩论。这个项目的价值就在于不同的视角。
+
+---
+
 ## 🙏 致谢
 
 - [**Hermes Agent**](https://github.com/NousResearch/hermes-agent) — 驱动本项目的 AI Agent 框架
 - [**DeepSeek**](https://github.com/deepseek-ai/DeepSeek-V3) — 为本项目提供核心推理能力的 LLM
 - [**OpenViking**](https://github.com/volcengine/OpenViking) — Thought Ingestion 模块的 L0/L1/L2 三级记忆管理与检索思路源于此项目
-
-以及所有开源项目的维护者，你们的 work 是这一切的基础。
+- 所有开源项目的维护者，你们的 work 是这一切的基础
 
 ## 📄 许可
 
-Apache 2.0
-
----
-
-<p align="center">Built by AI, directed by human.<br>让 AI 替你读，而不是替你喂。</p>
+MIT License — 代码随意使用，理念欢迎碰撞。
