@@ -132,6 +132,20 @@ Orcas 是一套 **AI 主动维护的个人知识基础设施**。它自动完成
 | `health_check.py` | 系统健康检查。验证 KG 完整性、快照时效性、采集输出状态。支持 `--full` 模式验证模块可加载性。 |
 | `data_validate.py` | 数据校验。检查采集输出 JSON 格式、必填字段、重复记录；统计 KG 表行数。 |
 
+### 2.6 治理工具 (`governance/`)
+
+三元认知共同体的工程化实现。不依赖系统其他模块，可独立使用。
+
+| 文件 | 职责 |
+|------|------|
+| `audit.py` | Schema 合规审计。检查个人聚落零 co_occurrence、judgment author 分布、settlement 一致性、影子实体连接完整性。 |
+| `escalation.py` | 越级上报检测器。检测助手视角报告中的越级信号（4 条检测规则），用于决策者与思维框架的制衡。 |
+| `risk_rating.py` | 决策风险评级。三维度评分（可逆性/影响面/新颖度），自动匹配制衡深度（低/中/高风险对应简化/标准/完整审查）。 |
+| `experiment.py` | 实验生命周期管理。`new`/`list`/`show`/`status` 命令，管理 假设→实验→验证→提炼→收录 全流程。 |
+| `templates/perspective-report.md` | 助手独立视角报告模板。含观点陈述、前提假设清单、越级上报信号检测、自我约束。 |
+
+详见 [`governance/README.md`](../governance/README.md)。
+
 ---
 
 ## 三、部署步骤（由 AI Agent 执行）
